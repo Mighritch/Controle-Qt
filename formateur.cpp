@@ -89,4 +89,3 @@ bool formateur::supprime(const QString& cin) {
 
     return true;
 }
-
