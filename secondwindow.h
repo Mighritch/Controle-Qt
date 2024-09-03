@@ -39,6 +39,20 @@ private slots:
 
     void on_pushButton_11_clicked();
 
+    void on_pushButton_12_clicked();
+
+    void on_pushButton_13_clicked();
+
+    void on_pushButton_14_clicked();
+
+    void on_tableview_clicked(const QModelIndex &index);
+
+    void on_lineEdit_4_textChanged(const QString &arg1);
+
+    void on_lineEdit_5_textChanged(const QString &arg1);
+
+    void on_dateEdit_2_dateChanged(const QDate &date);
+
 private:
     Ui::secondwindow *ui;
     formation *fo ;
