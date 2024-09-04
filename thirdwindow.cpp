@@ -70,20 +70,19 @@ void thirdwindow::on_pushButton_clicked()
         return;
     }
 
-    // Vérifiez si le CIN ou le numéro de téléphone existent déjà
+    // Vérifiez si le CIN existe déjà
     QSqlQuery query;
-    query.prepare("SELECT COUNT(*) FROM formateur WHERE cin = :cin OR telephone = :telephone");
+    query.prepare("SELECT COUNT(*) FROM formateur WHERE cin = :cin");
     query.bindValue(":cin", cinStr);
-    query.bindValue(":telephone", telephoneStr);
     if (!query.exec()) {
-        QMessageBox::critical(this, "Erreur de requête", "Erreur lors de la vérification de l'existence du CIN ou du téléphone.");
+        QMessageBox::critical(this, "Erreur de requête", "Erreur lors de la vérification de l'existence du CIN.");
         return;
     }
 
     query.next();
     int count = query.value(0).toInt();
     if (count > 0) {
-        QMessageBox::warning(this, "Erreur", "Le CIN ou le numéro de téléphone existe déjà dans la base de données.");
+        QMessageBox::warning(this, "Erreur", "Un formateur avec ce CIN existe déjà.");
         return;
     }
 
