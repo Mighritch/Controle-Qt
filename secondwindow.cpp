@@ -37,34 +37,51 @@ secondwindow::~secondwindow()
     delete fo;
 }
 
-void secondwindow::on_pushButton_clicked()
-{
+void secondwindow::on_pushButton_clicked() {
     QString titre = ui->lineEdit->text();
     QString description = ui->lineEdit_2->text();
-    QDate date_formation = ui->dateEdit->date();
-    QString nomformateur = ui->lineEdit_3->text();
-    int nombreplaces = ui->lineEdit_6->text().toInt();
+    QDate dateFormation = ui->dateEdit->date();
+    QString nomFormateur = ui->lineEdit_3->text();
+    int nombrePlaces = ui->lineEdit_6->text().toInt();
 
-    if (titre.isEmpty() || description.isEmpty() || nomformateur.isEmpty() || ui->lineEdit_6->text().isEmpty()) {
+    if (titre.isEmpty() || description.isEmpty() || nomFormateur.isEmpty() || ui->lineEdit_6->text().isEmpty()) {
         QMessageBox::warning(this, "Erreur", "Veuillez remplir tous les champs.");
         return;
     }
 
-    if (date_formation < QDate::currentDate()) {
+    if (dateFormation < QDate::currentDate()) {
         QMessageBox::warning(this, "Erreur", "La date de formation ne peut pas être antérieure à la date d'aujourd'hui.");
         return;
     }
 
-    if (titre.length() > 20 || description.length() > 50 || nomformateur.length() > 20 || nombreplaces <= 0) {
+    if (titre.length() > 20 || description.length() > 50 || nomFormateur.length() > 20 || nombrePlaces <= 0) {
         QMessageBox::warning(this, "Erreur", "Longueur des champs invalide ou nombre de places incorrect.");
+        return;
+    }
+
+    // Vérification de l'existence d'une formation avec la même date et le même formateur
+    QSqlQuery query;
+    query.prepare("SELECT COUNT(*) FROM formation WHERE date_formation = :dateFormation AND nomformateur = :nomFormateur");
+    query.bindValue(":dateFormation", dateFormation);
+    query.bindValue(":nomFormateur", nomFormateur);
+
+    if (!query.exec()) {
+        QMessageBox::critical(this, "Erreur de requête", "Erreur lors de la vérification de l'existence d'une formation similaire.");
+        return;
+    }
+
+    query.next();
+    int count = query.value(0).toInt();
+    if (count > 0) {
+        QMessageBox::warning(this, "Erreur", "Une formation avec la même date et le même formateur existe déjà.");
         return;
     }
 
     fo->setTitre(titre);
     fo->setDescription(description);
-    fo->setDateFormation(date_formation);
-    fo->setNomFormateur(nomformateur);
-    fo->setNombrePlaces(nombreplaces);
+    fo->setDateFormation(dateFormation);
+    fo->setNomFormateur(nomFormateur);
+    fo->setNombrePlaces(nombrePlaces);
 
     if (fo->ajout()) {
         QMessageBox::information(this, "Ajout réussi", "Formation ajoutée avec succès.");
@@ -78,7 +95,6 @@ void secondwindow::on_pushButton_clicked()
         ui->lineEdit_6->clear();
     }
 }
-
 
 void secondwindow::on_pushButton_2_clicked()
 {
@@ -408,4 +424,3 @@ void secondwindow::on_dateEdit_2_dateChanged(const QDate &dateFormation)
         QMessageBox::warning(this, "Aucun résultat", "Aucun résultat trouvé.");
     }
 }
-
